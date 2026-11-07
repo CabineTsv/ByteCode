@@ -1,0 +1,22 @@
+# Gradle / Android
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+.DS_Store
+captures/
+.cxx/
+*.apk
+*.aab
+gradle/wrapper/gradle-wrapper.jar
+
+# Fetched at build time (see luau/build.gradle.kts and editor/build.gradle.kts)
+luau/native/third_party/
+editor/web/node_modules/
+editor/src/main/assets/editor/dist/
+
+# Signing material must never be committed
+*.jks
+*.keystore
+keystore.properties
