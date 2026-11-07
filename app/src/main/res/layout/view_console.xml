@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/console_panel"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bc_panel"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/bc_border" />
+
+    <FrameLayout
+        android:id="@+id/console_handle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/console_handle_height"
+        android:contentDescription="@string/console_resize">
+
+        <View
+            android:layout_width="36dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_grabber" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/console_header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/console_header_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
+
+        <TextView
+            android:id="@+id/console_tab_output"
+            style="@style/Widget.ByteCode.ConsoleTab"
+            android:text="@string/console_output" />
+
+        <TextView
+            android:id="@+id/console_tab_problems"
+            style="@style/Widget.ByteCode.ConsoleTab"
+            android:text="@string/console_problems" />
+
+        <TextView
+            android:id="@+id/console_tab_search"
+            style="@style/Widget.ByteCode.ConsoleTab"
+            android:text="@string/console_search" />
+
+        <TextView
+            android:id="@+id/console_tab_log"
+            style="@style/Widget.ByteCode.ConsoleTab"
+            android:text="@string/console_log" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/console_clear"
+            style="@style/Widget.ByteCode.IconButton"
+            android:contentDescription="@string/action_clear_output"
+            android:src="@drawable/ic_clear" />
+
+        <ImageButton
+            android:id="@+id/console_toggle"
+            style="@style/Widget.ByteCode.IconButton"
+            android:contentDescription="@string/action_toggle_console"
+            android:src="@drawable/ic_expand_more" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/console_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="6dp" />
+</LinearLayout>

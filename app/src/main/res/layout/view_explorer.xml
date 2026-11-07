@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/explorer_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bc_sidebar"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="4dp">
+
+        <TextView
+            android:id="@+id/explorer_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:letterSpacing="0.08"
+            android:text="@string/explorer_title"
+            android:textColor="@color/bc_text_secondary"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/explorer_new_file"
+            style="@style/Widget.ByteCode.IconButton"
+            android:contentDescription="@string/action_new_file"
+            android:src="@drawable/ic_add_file" />
+
+        <ImageButton
+            android:id="@+id/explorer_new_folder"
+            style="@style/Widget.ByteCode.IconButton"
+            android:contentDescription="@string/action_new_folder"
+            android:src="@drawable/ic_add_folder" />
+
+        <ImageButton
+            android:id="@+id/explorer_refresh"
+            style="@style/Widget.ByteCode.IconButton"
+            android:contentDescription="@string/action_refresh"
+            android:src="@drawable/ic_refresh" />
+
+        <ImageButton
+            android:id="@+id/explorer_collapse"
+            style="@style/Widget.ByteCode.IconButton"
+            android:contentDescription="@string/action_collapse_all"
+            android:src="@drawable/ic_collapse_all" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/explorer_workspace_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bc_toolbar"
+        android:ellipsize="middle"
+        android:paddingStart="14dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="6dp"
+        android:singleLine="true"
+        android:textColor="@color/bc_text"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/explorer_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/explorer_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp" />
+
+        <LinearLayout
+            android:id="@+id/explorer_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/explorer_empty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/explorer_empty"
+                android:textColor="@color/bc_text_secondary"
+                android:textSize="13sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/explorer_open_button"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_open_folder" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>
