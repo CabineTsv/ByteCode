@@ -1,4 +1,4 @@
-# ByteCode
+# ByteCode (vibecoded, don't mind)
 
 A mobile-first code editor for Android, inspired by Visual Studio Code. Real files, a real editor
 (CodeMirror 6), a real console, and first-class **Luau** support with a native runtime built from the
