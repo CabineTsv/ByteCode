@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self'">
+  <title>ByteCode editor</title>
+  <link rel="stylesheet" href="editor.css">
+</head>
+<body class="no-documents">
+  <div id="editor"></div>
+  <div id="empty-state">
+    <div class="empty-title">No file open</div>
+    <div class="empty-hint">Open the explorer and pick a file, or use the command palette.</div>
+  </div>
+  <script type="module" src="dist/main.js"></script>
+</body>
+</html>
