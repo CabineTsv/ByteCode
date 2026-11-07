@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bc_background">#FFFBFBFC</color>
+    <color name="bc_sidebar">#FFF1F3F5</color>
+    <color name="bc_toolbar">#FFE9ECEF</color>
+    <color name="bc_panel">#FFF6F7F9</color>
+    <color name="bc_border">#FFD3D8DE</color>
+    <color name="bc_border_strong">#FFB4BBC4</color>
+    <color name="bc_text">#FF24292F</color>
+    <color name="bc_text_secondary">#FF6B7280</color>
+    <color name="bc_selection">#FFDFE4EA</color>
+    <color name="bc_ripple">#1F000000</color>
+    <color name="bc_key">#FFDDE1E6</color>
+    <color name="bc_error">#FFC62828</color>
+    <color name="bc_warning">#FF9A6700</color>
+    <color name="bc_success">#FF1A7F37</color>
+    <color name="bc_info">#FF0969DA</color>
+    <color name="bc_accent">#FF4EA1FF</color>
+    <color name="bc_on_accent">#FF0B1B2E</color>
+    <color name="ic_launcher_background">#FF1B1D21</color>
+</resources>

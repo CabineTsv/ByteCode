@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ByteCode" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/bc_accent</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorSecondary">@color/bc_accent</item>
+        <item name="colorSurface">@color/bc_sidebar</item>
+        <item name="colorOnSurface">@color/bc_text</item>
+        <item name="colorSurfaceVariant">@color/bc_toolbar</item>
+        <item name="colorOnSurfaceVariant">@color/bc_text_secondary</item>
+        <item name="colorSurfaceContainer">@color/bc_toolbar</item>
+        <item name="colorSurfaceContainerHigh">@color/bc_toolbar</item>
+        <item name="colorSurfaceContainerHighest">@color/bc_toolbar</item>
+        <item name="colorSurfaceContainerLow">@color/bc_sidebar</item>
+        <item name="colorSurfaceContainerLowest">@color/bc_background</item>
+        <item name="colorOutline">@color/bc_border_strong</item>
+        <item name="colorOutlineVariant">@color/bc_border</item>
+        <item name="colorControlNormal">@color/bc_text_secondary</item>
+        <item name="android:colorBackground">@color/bc_background</item>
+        <item name="android:statusBarColor">@color/bc_toolbar</item>
+        <item name="android:navigationBarColor">@color/bc_background</item>
+        <item name="android:textColorPrimary">@color/bc_text</item>
+        <item name="android:textColorSecondary">@color/bc_text_secondary</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="TextAppearance.ByteCode.Title" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/bc_text</item>
+    </style>
+
+    <style name="TextAppearance.ByteCode.Subtitle" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/bc_text_secondary</item>
+    </style>
+
+    <style name="Widget.ByteCode.ConsoleTab" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.04</item>
+        <item name="android:textColor">@color/bc_text_secondary</item>
+        <item name="android:background">@drawable/bg_item_ripple</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="Widget.ByteCode.IconButton" parent="">
+        <item name="android:layout_width">@dimen/icon_button</item>
+        <item name="android:layout_height">@dimen/icon_button</item>
+        <item name="android:background">@drawable/bg_icon_ripple</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="ThemeOverlay.ByteCode.Accent.Azure" parent="">
+        <item name="colorPrimary">#4EA1FF</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorPrimaryContainer">#1D3A5C</item>
+        <item name="colorSecondary">#4EA1FF</item>
+    </style>
+    <style name="ThemeOverlay.ByteCode.Accent.Teal" parent="">
+        <item name="colorPrimary">#2FBFAD</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorPrimaryContainer">#17433E</item>
+        <item name="colorSecondary">#2FBFAD</item>
+    </style>
+    <style name="ThemeOverlay.ByteCode.Accent.Green" parent="">
+        <item name="colorPrimary">#5CC47C</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorPrimaryContainer">#1E4229</item>
+        <item name="colorSecondary">#5CC47C</item>
+    </style>
+    <style name="ThemeOverlay.ByteCode.Accent.Amber" parent="">
+        <item name="colorPrimary">#E5A63A</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorPrimaryContainer">#4A3612</item>
+        <item name="colorSecondary">#E5A63A</item>
+    </style>
+    <style name="ThemeOverlay.ByteCode.Accent.Orange" parent="">
+        <item name="colorPrimary">#F0814A</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorPrimaryContainer">#4D2A17</item>
+        <item name="colorSecondary">#F0814A</item>
+    </style>
+    <style name="ThemeOverlay.ByteCode.Accent.Rose" parent="">
+        <item name="colorPrimary">#E9627F</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorPrimaryContainer">#4D1F2B</item>
+        <item name="colorSecondary">#E9627F</item>
+    </style>
+    <style name="ThemeOverlay.ByteCode.Accent.Violet" parent="">
+        <item name="colorPrimary">#9A7CF0</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorPrimaryContainer">#33285A</item>
+        <item name="colorSecondary">#9A7CF0</item>
+    </style>
+    <style name="ThemeOverlay.ByteCode.Accent.Slate" parent="">
+        <item name="colorPrimary">#8D9BB3</item>
+        <item name="colorOnPrimary">@color/bc_on_accent</item>
+        <item name="colorPrimaryContainer">#2D3441</item>
+        <item name="colorSecondary">#8D9BB3</item>
+    </style>
+</resources>
