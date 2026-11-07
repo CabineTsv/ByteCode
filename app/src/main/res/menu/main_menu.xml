@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_run"
+        android:icon="@drawable/ic_play"
+        android:title="@string/action_run"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_save"
+        android:icon="@drawable/ic_save"
+        android:title="@string/action_save"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_find"
+        android:icon="@drawable/ic_search"
+        android:title="@string/action_find"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_command_palette"
+        android:title="@string/action_command_palette"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_quick_open"
+        android:title="@string/action_quick_open"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_goto_line"
+        android:title="@string/action_goto_line"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_search_files"
+        android:title="@string/action_search_files"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_save_all"
+        android:title="@string/action_save_all"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_open_folder"
+        android:title="@string/action_open_folder"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_open_file"
+        android:title="@string/action_open_file"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_toggle_console"
+        android:title="@string/action_toggle_console"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_about"
+        android:title="@string/action_about"
+        app:showAsAction="never" />
+</menu>
