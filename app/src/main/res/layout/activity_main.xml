@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bc_background"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:id="@+id/main_column"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            android:background="@color/bc_toolbar"
+            app:contentInsetStartWithNavigation="0dp"
+            app:navigationIcon="@drawable/ic_menu"
+            app:subtitleTextAppearance="@style/TextAppearance.ByteCode.Subtitle"
+            app:titleTextAppearance="@style/TextAppearance.ByteCode.Title" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/bc_border" />
+
+        <LinearLayout
+            android:id="@+id/workbench"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/explorer_dock"
+                android:layout_width="@dimen/explorer_default_width"
+                android:layout_height="match_parent"
+                android:background="@color/bc_sidebar"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/explorer_divider"
+                android:layout_width="@dimen/explorer_divider_width"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_vertical_divider"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/editor_column"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tab_strip"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/tab_height"
+                    android:background="@color/bc_toolbar"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/bc_border" />
+
+                <FrameLayout
+                    android:id="@+id/editor_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <dev.bytecode.editor.CodeEditorView
+                        android:id="@+id/editor_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/bc_border" />
+
+                <dev.bytecode.app.ui.ExtraKeysBar
+                    android:id="@+id/extra_keys"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/extra_keys_height"
+                    android:background="@color/bc_toolbar" />
+
+                <LinearLayout
+                    android:id="@+id/status_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/status_height"
+                    android:background="@color/bc_toolbar"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                    <TextView
+                        android:id="@+id/status_message"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textColor="@color/bc_text_secondary"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/status_position"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:textColor="@color/bc_text_secondary"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/status_indent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:textColor="@color/bc_text_secondary"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/status_language"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:textColor="@color/bc_text_secondary"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <include
+            layout="@layout/view_console"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/explorer_drawer"
+        android:layout_width="@dimen/drawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/bc_sidebar"
+        android:clickable="true"
+        android:focusable="true" />
+</androidx.drawerlayout.widget.DrawerLayout>
