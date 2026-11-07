@@ -1,0 +1,53 @@
+:root {
+  --bc-bg: #1b1d21;
+  --bc-muted: #8a919c;
+  --bc-accent: #4ea1ff;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bc-bg);
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#editor {
+  position: absolute;
+  inset: 0;
+}
+
+#editor .cm-editor {
+  height: 100%;
+}
+
+#editor .cm-editor.cm-focused {
+  outline: none;
+}
+
+#empty-state {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--bc-muted);
+  font-family: system-ui, -apple-system, "Roboto", sans-serif;
+}
+
+.empty-title {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.empty-hint {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+body.no-documents #editor { display: none; }
+body.no-documents #empty-state { display: flex; }
