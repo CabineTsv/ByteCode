@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/settings_category_editor"
+        app:iconSpaceReserved="false">
+        <SeekBarPreference
+            android:defaultValue="14"
+            android:key="editor_font_size"
+            android:max="32"
+            android:title="@string/settings_font_size"
+            app:iconSpaceReserved="false"
+            app:min="8"
+            app:showSeekBarValue="true" />
+        <ListPreference
+            android:defaultValue="system"
+            android:entries="@array/font_family_entries"
+            android:entryValues="@array/font_family_values"
+            android:key="editor_font_family"
+            android:title="@string/settings_font_family"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:key="editor_import_font"
+            android:summary="@string/settings_import_font_summary"
+            android:title="@string/settings_import_font"
+            app:iconSpaceReserved="false" />
+        <ListPreference
+            android:defaultValue="4"
+            android:entries="@array/tab_size_entries"
+            android:entryValues="@array/tab_size_values"
+            android:key="editor_tab_size"
+            android:title="@string/settings_tab_size"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="editor_insert_spaces"
+            android:title="@string/settings_insert_spaces"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="editor_word_wrap"
+            android:title="@string/settings_word_wrap"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="editor_line_numbers"
+            android:title="@string/settings_line_numbers"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="editor_highlight_line"
+            android:title="@string/settings_highlight_line"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="editor_auto_brackets"
+            android:title="@string/settings_auto_brackets"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="editor_auto_quotes"
+            android:title="@string/settings_auto_quotes"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="editor_auto_indent"
+            android:title="@string/settings_auto_indent"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="editor_fold_gutter"
+            android:title="@string/settings_fold_gutter"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_category_appearance"
+        app:iconSpaceReserved="false">
+        <ListPreference
+            android:defaultValue="dark"
+            android:entries="@array/theme_entries"
+            android:entryValues="@array/theme_values"
+            android:key="ui_theme"
+            android:title="@string/settings_theme"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            android:defaultValue="azure"
+            android:entries="@array/accent_entries"
+            android:entryValues="@array/accent_values"
+            android:key="ui_accent"
+            android:title="@string/settings_accent"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            android:defaultValue="#4ea1ff"
+            android:key="ui_accent_custom"
+            android:summary="@string/settings_accent_custom_summary"
+            android:title="@string/settings_accent_custom"
+            app:iconSpaceReserved="false" />
+        <ListPreference
+            android:defaultValue="default"
+            android:entries="@array/syntax_theme_entries"
+            android:entryValues="@array/syntax_theme_values"
+            android:key="ui_syntax_theme"
+            android:title="@string/settings_syntax_theme"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_category_files"
+        app:iconSpaceReserved="false">
+        <ListPreference
+            android:defaultValue="off"
+            android:entries="@array/autosave_entries"
+            android:entryValues="@array/autosave_values"
+            android:key="files_autosave"
+            android:title="@string/settings_autosave"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_category_run"
+        app:iconSpaceReserved="false">
+        <ListPreference
+            android:defaultValue="15"
+            android:entries="@array/run_timeout_entries"
+            android:entryValues="@array/run_timeout_values"
+            android:key="run_timeout"
+            android:title="@string/settings_run_timeout"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="run_clear_output"
+            android:title="@string/settings_clear_output"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/settings_category_about"
+        app:iconSpaceReserved="false">
+        <Preference
+            android:key="about_version"
+            android:selectable="false"
+            android:title="@string/settings_about"
+            app:iconSpaceReserved="false" />
+    </PreferenceCategory>
+</PreferenceScreen>
