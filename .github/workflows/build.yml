@@ -1,0 +1,157 @@
+name: Build ByteCode
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "Build type"
+        type: choice
+        options:
+          - debug
+          - release
+        default: debug
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write # lets the workflow attach APKs to a GitHub release
+
+env:
+  GRADLE_VERSION: "8.10.2"
+  NDK_VERSION: "27.0.12077973"
+  CMAKE_VERSION: "3.22.1"
+
+jobs:
+  quick-tests:
+    name: Unit tests (editor logic, native helpers)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Editor unit tests (Luau tokenizer and completion analysis)
+        working-directory: editor/web
+        run: node --test
+
+      - name: Static source checks (imports, resources, JNI names, enums)
+        continue-on-error: true
+        run: python3 scripts/static-check.py
+
+      - name: Native sources type-check (against hand-written API stubs)
+        run: sh luau/native/tests/syntax-check.sh
+
+      - name: Native helper tests (UTF-8/UTF-16 conversion)
+        run: |
+          g++ -std=c++17 -Wall -Wextra -fsanitize=address,undefined \
+            -Iluau/native/src luau/native/tests/text_convert_test.cpp -o /tmp/text_convert_test
+          /tmp/text_convert_test
+
+  build:
+    name: Build APK
+    needs: quick-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Decide build type
+        id: config
+        run: |
+          if [ "${{ github.event_name }}" = "release" ] || [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "type=release" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "type=${{ inputs.build_type }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "type=debug" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('editor/web/package.json') }}
+          restore-keys: npm-
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK components
+        run: |
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" \
+            "ndk;${NDK_VERSION}" "cmake;${CMAKE_VERSION}"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
+
+      - name: Prepare release signing key (optional)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.BYTECODE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/bytecode.jks"
+            echo "BYTECODE_KEYSTORE_FILE=$RUNNER_TEMP/bytecode.jks" >> "$GITHUB_ENV"
+          else
+            echo "::notice::No signing key configured (secret BYTECODE_KEYSTORE_BASE64). A release APK is signed with the debug key."
+          fi
+
+      - name: Build APK
+        env:
+          BYTECODE_MINIFY: ${{ steps.config.outputs.type == 'release' && '1' || '0' }}
+          BYTECODE_KEYSTORE_PASSWORD: ${{ secrets.BYTECODE_KEYSTORE_PASSWORD }}
+          BYTECODE_KEY_ALIAS: ${{ secrets.BYTECODE_KEY_ALIAS }}
+          BYTECODE_KEY_PASSWORD: ${{ secrets.BYTECODE_KEY_PASSWORD }}
+        run: |
+          if [ "${{ steps.config.outputs.type }}" = "release" ]; then
+            TASK=":app:assembleRelease"
+          else
+            TASK=":app:assembleDebug"
+          fi
+          gradle --no-daemon --stacktrace "$TASK"
+
+      - name: Verify that an APK was produced
+        run: |
+          find app/build/outputs/apk -name "*.apk" -print
+          test -n "$(find app/build/outputs/apk -name '*.apk' | head -n 1)"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: bytecode-${{ steps.config.outputs.type }}-apk
+          path: app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+
+      - name: Upload build reports (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports
+          path: |
+            **/build/reports/
+          if-no-files-found: ignore
+
+      - name: Attach APK to the GitHub release
+        if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/*.apk
