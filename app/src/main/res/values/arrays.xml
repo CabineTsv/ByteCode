@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="font_family_entries">
+        <item>System monospace</item>
+        <item>Courier (serif monospace)</item>
+        <item>Imported font</item>
+    </string-array>
+    <string-array name="font_family_values">
+        <item>system</item>
+        <item>courier</item>
+        <item>custom</item>
+    </string-array>
+    <string-array name="tab_size_entries">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="tab_size_values">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="theme_entries">
+        <item>Dark</item>
+        <item>Light</item>
+        <item>Follow system</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>dark</item>
+        <item>light</item>
+        <item>system</item>
+    </string-array>
+    <string-array name="accent_entries">
+        <item>Azure</item>
+        <item>Teal</item>
+        <item>Green</item>
+        <item>Amber</item>
+        <item>Orange</item>
+        <item>Rose</item>
+        <item>Violet</item>
+        <item>Slate</item>
+        <item>Custom</item>
+    </string-array>
+    <string-array name="accent_values">
+        <item>azure</item>
+        <item>teal</item>
+        <item>green</item>
+        <item>amber</item>
+        <item>orange</item>
+        <item>rose</item>
+        <item>violet</item>
+        <item>slate</item>
+        <item>custom</item>
+    </string-array>
+    <string-array name="syntax_theme_entries">
+        <item>Default (VS Code style)</item>
+        <item>Monokai</item>
+        <item>Solarized</item>
+    </string-array>
+    <string-array name="syntax_theme_values">
+        <item>default</item>
+        <item>monokai</item>
+        <item>solarized</item>
+    </string-array>
+    <string-array name="autosave_entries">
+        <item>Off</item>
+        <item>After a short delay</item>
+        <item>When leaving the file or app</item>
+    </string-array>
+    <string-array name="autosave_values">
+        <item>off</item>
+        <item>delay</item>
+        <item>focus</item>
+    </string-array>
+    <string-array name="run_timeout_entries">
+        <item>5 seconds</item>
+        <item>15 seconds</item>
+        <item>30 seconds</item>
+        <item>60 seconds</item>
+        <item>No timeout</item>
+    </string-array>
+    <string-array name="run_timeout_values">
+        <item>5</item>
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>0</item>
+    </string-array>
+</resources>
