@@ -8,7 +8,7 @@
 // "variableName.definition", ...) or the custom names mapped in language.js:
 //   robloxGlobal, robloxMethod, luauBuiltin, luauBuiltinMember, luauType
 import {
-  KEYWORDS, CONTROL_KEYWORDS, STATEMENT_KEYWORDS, BUILTIN_TYPES, GLOBAL_FUNCTIONS, LIBRARY_NAMES,
+  KEYWORDS, CONTROL_KEYWORDS, STATEMENT_KEYWORDS, BUILTIN_TYPES, GLOBAL_FUNCTIONS, CUSTOM_GLOBAL_FUNCTIONS, LIBRARY_NAMES,
   LIBRARY_MEMBERS, ROBLOX_GLOBALS, ROBLOX_GLOBAL_FUNCTIONS, ROBLOX_METHODS, ROBLOX_CLASS_NAMES,
 } from "./data.js";
 
@@ -245,7 +245,7 @@ function readIdentifier(stream, state, word) {
 
   let style;
   if (ROBLOX_GLOBALS.has(word) || ROBLOX_GLOBAL_FUNCTIONS.has(word)) style = "robloxGlobal";
-  else if (GLOBAL_FUNCTIONS.has(word) || LIBRARY_NAMES.has(word)) style = "luauBuiltin";
+  else if (GLOBAL_FUNCTIONS.has(word) || CUSTOM_GLOBAL_FUNCTIONS.has(word) || LIBRARY_NAMES.has(word)) style = "luauBuiltin";
   else style = callFollows ? "variableName.function" : "variableName";
   return done(state, "ident", word, style);
 }
