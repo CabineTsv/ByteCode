@@ -1,0 +1,8 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/bc_ripple">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/bc_tab_inactive" />
+        </shape>
+    </item>
+</ripple>
