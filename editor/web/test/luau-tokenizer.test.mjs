@@ -213,6 +213,38 @@ test("never loops or throws on awkward input", () => {
   assert.equal(styleOf(t, "after"), "variableName.definition");
 });
 
+test("environment functions are highlighted like the other built-ins in calls and as plain references", () => {
+  const names = ["getconnections", "hookfunction", "hookmetamethod", "getupvalues", "getgc"];
+  for (const name of names) {
+    assert.equal(styleOf(flat(`${name}(game)`), name), "luauBuiltin", `${name} call`);
+    assert.equal(styleOf(flat(`local f = ${name}`), name), "luauBuiltin", `${name} reference`);
+    assert.equal(styleOf(flat(`local t = { fn = ${name} }`), name), "luauBuiltin", `${name} in table`);
+    assert.equal(styleOf(flat(`${name} "x"`), name), "luauBuiltin", `${name} string call`);
+  }
+  assert.equal(styleOf(flat("print(1)"), "print"), styleOf(flat("hookfunction(1)"), "hookfunction"));
+});
+
+test("environment function names inside comments and strings are not highlighted as identifiers", () => {
+  const comment = flat("-- hookfunction(getgc)");
+  assert.equal(comment.length, 1);
+  assert.equal(comment[0][1], "comment");
+  const string = flat('local s = "getconnections hookmetamethod"');
+  assert.equal(styleOf(string, '"getconnections hookmetamethod"'), "string");
+  assert.equal(styleOf(string, "getconnections"), undefined);
+  const block = tokenize("--[[ getupvalues\nhookfunction ]] getgc()").rows;
+  assert.equal(block[1].row.find(([text]) => text === "getgc")[1], "luauBuiltin");
+  assert.equal(block[1].row.find(([text]) => text === "hookfunction"), undefined);
+  const longString = tokenize("local s = [[ hookfunction\ngetgc ]] hookmetamethod()").rows;
+  assert.equal(longString[1].row.find(([text]) => text === "hookmetamethod")[1], "luauBuiltin");
+});
+
+test("environment function names do not override declarations or members", () => {
+  assert.equal(styleOf(flat("local hookfunction = 1"), "hookfunction"), "variableName.definition");
+  assert.equal(styleOf(flat("local function getgc() end"), "getgc"), "variableName.definition.function");
+  assert.equal(styleOf(flat("obj.getgc = 1"), "getgc"), "propertyName");
+  assert.equal(styleOf(flat("getgcx()"), "getgcx"), "variableName.function");
+});
+
 test("prints a sample for visual inspection", () => {
   const sample = `--!strict
 local Players = game:GetService("Players")
