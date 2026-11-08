@@ -9,6 +9,11 @@ class FakeDoc {
   get length() { return this.text.length; }
   get lines() { return this.text.split("\n").length; }
   sliceString(from, to) { return this.text.slice(from, to); }
+  iterLines() {
+    const lines = this.text.split("\n");
+    let index = 0;
+    return { next: () => (index < lines.length ? { value: lines[index++], done: false } : { value: "", done: true }) };
+  }
   line(number) {
     const lines = this.text.split("\n");
     let from = 0;
@@ -40,13 +45,31 @@ export class Compartment {
 
 export const Prec = { high: (x) => x, highest: (x) => x };
 
+export class StateField {
+  constructor(spec) { this.spec = spec; }
+  static define(spec) { return new StateField(spec); }
+}
+
 export class EditorState {
-  constructor(doc, extensions, head = 0) {
+  constructor(doc, extensions, head = 0, fields = new Map()) {
     this.doc = doc;
     this.extensions = extensions;
     this.head = head;
+    this.fields = fields;
   }
-  static create({ doc = "", extensions = [] } = {}) { return new EditorState(new FakeDoc(doc), flatten(extensions)); }
+  static create({ doc = "", extensions = [] } = {}) {
+    const flat = flatten(extensions);
+    const state = new EditorState(new FakeDoc(doc), flat);
+    for (const item of flat) {
+      if (item instanceof StateField) state.fields.set(item, item.spec.create(state));
+    }
+    return state;
+  }
+  field(field, require = true) {
+    if (this.fields.has(field)) return this.fields.get(field);
+    if (require) throw new RangeError("Field is not present in this state");
+    return undefined;
+  }
   get selection() {
     const main = { head: this.head, from: this.head, to: this.head };
     return { main, ranges: [main] };
@@ -54,11 +77,15 @@ export class EditorState {
   sliceDoc(from = 0, to = this.doc.length) { return this.doc.sliceString(from, to); }
   replaceSelection(text) { return { changes: { from: this.head, to: this.head, insert: text } }; }
   update(spec = {}) {
-    let text = this.doc.text;
-    const changes = spec.changes ? [].concat(spec.changes) : [];
-    for (const change of changes) {
-      text = text.slice(0, change.from) + (change.insert ?? "") + text.slice(change.to ?? change.from);
+    const changes = (spec.changes ? [].concat(spec.changes) : [])
+      .map((change) => ({ from: change.from, to: change.to ?? change.from, insert: change.insert ?? "" }))
+      .sort((a, b) => a.from - b.from);
+    const oldText = this.doc.text;
+    let text = oldText;
+    for (const change of [...changes].reverse()) {
+      text = text.slice(0, change.from) + change.insert + text.slice(change.to);
     }
+    const doc = changes.length ? new FakeDoc(text) : this.doc;
     let extensions = this.extensions;
     for (const effect of [].concat(spec.effects || [])) {
       if (effect && effect.reconfigure) {
@@ -66,7 +93,25 @@ export class EditorState {
           .concat({ compartment: effect.reconfigure, extension: effect.extension });
       }
     }
-    return { state: new EditorState(new FakeDoc(text), extensions, this.head) };
+    const next = new EditorState(doc, extensions, this.head);
+    const transaction = {
+      startState: this,
+      state: next,
+      newDoc: doc,
+      docChanged: changes.length > 0,
+      changes: {
+        iterChangedRanges(callback) {
+          let shift = 0;
+          for (const change of changes) {
+            const fromB = change.from + shift;
+            callback(change.from, change.to, fromB, fromB + change.insert.length);
+            shift += change.insert.length - (change.to - change.from);
+          }
+        },
+      },
+    };
+    for (const [field, value] of this.fields) next.fields.set(field, field.spec.update(value, transaction));
+    return { state: next };
   }
 }
 EditorState.readOnly = { of: (value) => ({ readOnly: value }) };
@@ -98,10 +143,13 @@ export class EditorView {
   static scrollIntoView(position, options) { return { scrollIntoView: position, options }; }
 }
 EditorView.updateListener = { of: (listener) => ({ updateListener: listener }) };
+EditorView.baseTheme = (spec) => ({ baseTheme: spec });
 EditorView.theme = (spec, options) => ({ theme: spec, options });
 EditorView.lineWrapping = { lineWrapping: true };
 EditorView.contentAttributes = { of: (attributes) => ({ contentAttributes: attributes }) };
 EditorView.editable = { of: (value) => ({ editable: value }) };
+
+export const ViewPlugin = { fromClass: (plugin) => ({ viewPlugin: plugin }) };
 
 // Everything else the glue imports from these two packages is configuration only.
 export const keymap = makeStub("keymap");
