@@ -1,4 +1,4 @@
-# ByteCode (vibecoded, don't mind)
+# ByteCode (ts super vibecoded)
 
 A mobile-first code editor for Android, inspired by Visual Studio Code. Real files, a real editor
 (CodeMirror 6), a real console, and first-class **Luau** support with a native runtime built from the
@@ -107,6 +107,7 @@ ByteCode/
 │   └── native/                     CMake build, native sources, tests
 ├── docs/                           ARCHITECTURE, LUAU_RUNTIME, TEST_PLAN, ORIGINAL_SPEC (the owner's spec)
 ├── scripts/static-check.py         Source consistency checker (not a compiler)
+├── scripts/ci/                     CI helpers: Android SDK setup, workflow guard, failure digest, self-tests
 ├── BYTECODE_HANDOFF.md             Development handoff for continuing in a new chat
 ├── MANIFEST.sha256                 SHA-256 of every source file in this snapshot
 └── gradle/, settings.gradle.kts, build.gradle.kts, gradle.properties, gradlew
@@ -115,7 +116,7 @@ ByteCode/
 ## Building
 
 ### Prerequisites
-JDK 17, Android SDK platform 35 with build-tools 35.0.0, NDK `27.0.12077973`, CMake `3.22.1`, Node.js 18+,
+JDK 17, Android SDK platform 35 with build-tools 34.0.0 and 35.0.0, NDK `27.0.12077973`, CMake `3.22.1`, Node.js 18+,
 Git, and network access on the first build (npm registry, github.com).
 
 ### Command line
@@ -147,12 +148,18 @@ environment variables `BYTECODE_KEYSTORE_FILE`, `BYTECODE_KEYSTORE_PASSWORD`, `B
 
 * **Triggers:** push to `main`/`master`, tags `v*`, pull requests, published releases, and manual runs
   (`workflow_dispatch`, with a *debug/release* choice).
-* **quick-tests:** editor unit tests (Node), native helper tests (g++ with sanitizers), native type-check
-  against API stubs, and the static source check.
-* **build:** JDK 17, Node 20, Android SDK/NDK/CMake installed with `sdkmanager`, Gradle 8.10.2, then
-  `:app:assembleDebug` or `:app:assembleRelease`; fails if no APK was produced.
-* **Output:** the APK is uploaded as a workflow artifact; build reports are uploaded when the build fails;
-  APKs are attached to a GitHub release for `release` events and `v*` tags.
+* **quick-tests:** the CI helper self-tests and workflow guard (`scripts/ci`), editor unit tests (Node), native
+  helper tests (g++ with sanitizers), native type-check against API stubs, and the static source check.
+* **build:** the runner's own Android SDK, with platform 35, build-tools, NDK and CMake installed and verified by
+  `scripts/ci/setup-android-sdk.sh` (no third-party SDK action; see below), then JDK 17, Node 20, Gradle 8.10.2 and
+  `:app:assembleDebug` or `:app:assembleRelease` (with `--continue`); fails if no APK was produced.
+* **Output:** the APK is uploaded as a workflow artifact; APKs are attached to a GitHub release for `release`
+  events and `v*` tags. When a build fails, the run's **Summary** page shows a short *Build failure digest* (the
+  error lines and Gradle's "What went wrong"), and the full logs (`ci-logs`) and Gradle reports
+  (`build-reports`) are uploaded as artifacts.
+* **Rules:** `scripts/ci/check-workflow.py` fails the quick tests if the workflow uses `android-actions/setup-android`
+  (its default step asks `sdkmanager` for the removed package `tools`, which failed the first run) or any
+  third-party action that is not on its allow-list, or if the versions in `build.yml` differ from the Gradle files.
 
 To use it: push the repository to GitHub, open **Actions → Build ByteCode → Run workflow**, then download
 the artifact. For signed releases add the four `BYTECODE_*` secrets described above.
@@ -165,7 +172,12 @@ the artifact. For signed releases add the four `BYTECODE_*` secrets described ab
 - Native C++ type-checks against hand-written stand-ins for the Luau/JNI headers (consistency only)
 - All Android XML resources are well-formed and every `R.*` reference resolves; Kotlin imports resolve;
   JNI function names, enum values and listener implementations match (`scripts/static-check.py`)
-- Workflow YAML parses
+- Workflow YAML parses; 31 self-tests of the CI helper scripts pass (`scripts/ci`: fake `sdkmanager`, sample logs,
+  mutated workflow copies) and the workflow guard passes
+
+**GitHub Actions:** one run so far. The quick-tests job passed (the build job started, and it needs it); the build
+job then failed in its Android SDK step, before Gradle started, because of the third-party action described above.
+That step was replaced; the fixed workflow has not been run yet.
 
 **Not verified:** Gradle sync and build, Kotlin compilation, the NDK/CMake build against the real Luau
 sources, the real CodeMirror bundle, any behaviour on a device or emulator, Storage Access Framework
@@ -196,6 +208,8 @@ a workspace-aware `require`; a terminal; Git integration; a minimap and breadcru
 cd editor/web && node --test            # editor unit tests (no npm install needed)
 sh luau/native/tests/syntax-check.sh    # native type-check against API stubs
 python3 scripts/static-check.py         # source consistency checks
+python3 scripts/ci/check-workflow.py    # CI workflow guard (forbidden actions, versions in step)
+bash scripts/ci/test-ci-scripts.sh      # self-tests of the CI helper scripts
 sha256sum -c MANIFEST.sha256            # verify this snapshot
 ```
 
