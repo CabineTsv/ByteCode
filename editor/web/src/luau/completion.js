@@ -3,10 +3,11 @@
 import { syntaxTree } from "@codemirror/language";
 import { snippetCompletion } from "@codemirror/autocomplete";
 import {
-  KEYWORDS, GLOBAL_FUNCTIONS, LIBRARY_NAMES, ROBLOX_GLOBALS, ROBLOX_GLOBAL_FUNCTIONS, BUILTIN_TYPES,
+  KEYWORDS, GLOBAL_FUNCTIONS, CUSTOM_GLOBAL_FUNCTIONS, LIBRARY_NAMES, ROBLOX_GLOBALS, ROBLOX_GLOBAL_FUNCTIONS, BUILTIN_TYPES,
 } from "./data.js";
 import { SERVICES, CREATABLE, CLASSES, DATATYPES } from "./roblox-api.js";
 import { analyzeCursor, inferVariableTypes, parseReceiver, resolveType, membersForType } from "./analysis.js";
+import { suggestIdentifiers, validForPrefix } from "../identifiers.js";
 
 const MAX_SCAN_CHARS = 300000;
 
@@ -41,6 +42,7 @@ const SNIPPETS = [
 const staticWordOptions = [
   ...[...KEYWORDS].map((label) => ({ label, type: "keyword" })),
   ...[...GLOBAL_FUNCTIONS].map((label) => ({ label, type: label.startsWith("_") ? "variable" : "function", detail: "Luau" })),
+  ...[...CUSTOM_GLOBAL_FUNCTIONS].map((label) => ({ label, type: "function", detail: "environment" })),
   ...[...LIBRARY_NAMES].map((label) => ({ label, type: "namespace", detail: "library" })),
   { label: "task", type: "namespace", detail: "Roblox" },
   ...[...ROBLOX_GLOBALS].filter((label) => label !== "task").map((label) => ({ label, type: "variable", detail: "Roblox" })),
@@ -53,15 +55,17 @@ function insideStringOrComment(state, pos) {
   return /string|comment/i.test(node.name);
 }
 
-function documentWords(state, prefix) {
-  const text = state.doc.sliceString(0, Math.min(state.doc.length, MAX_SCAN_CHARS));
-  const seen = new Set();
-  for (const match of text.matchAll(/\b[A-Za-z_]\w{2,}\b/g)) {
-    if (match[0] !== prefix) seen.add(match[0]);
-    if (seen.size >= 400) break;
-  }
-  const known = new Set(staticWordOptions.map((option) => option.label));
-  return [...seen].filter((word) => !known.has(word)).map((label) => ({ label, type: "variable", boost: -5 }));
+const staticLabels = new Set(staticWordOptions.map((option) => option.label));
+
+function dynamicIdentifiers(state, pos, prefix) {
+  return suggestIdentifiers(state, {
+    pos,
+    prefix,
+    caseSensitive: true,
+    skip: staticLabels,
+    type: "variable",
+    detail: "document",
+  });
 }
 
 function stringArgumentCompletions(analysis, pos) {
@@ -78,7 +82,16 @@ function memberCompletions(context, analysis, pos) {
   const variableTypes = inferVariableTypes(state.doc.sliceString(0, Math.min(state.doc.length, MAX_SCAN_CHARS)));
   const type = resolveType(parseReceiver(analysis.receiver), variableTypes);
   const members = membersForType(type, analysis.separator);
-  if (members.length === 0) return null;
+  if (members.length === 0) {
+    if (analysis.prefix === "" && !context.explicit) return null;
+    const dynamic = dynamicIdentifiers(state, pos, analysis.prefix);
+    if (dynamic.options.length === 0) return null;
+    return {
+      from: pos - analysis.prefix.length,
+      options: dynamic.options,
+      validFor: validForPrefix(analysis.prefix, dynamic.truncated),
+    };
+  }
   return {
     from: pos - analysis.prefix.length,
     options: members.map((member) => ({
@@ -120,10 +133,11 @@ export function luauCompletionSource(context) {
       return typeCompletions(state, analysis, pos);
     default: {
       if (analysis.prefix === "" && !context.explicit) return null;
+      const dynamic = dynamicIdentifiers(state, pos, analysis.prefix);
       return {
         from: pos - analysis.prefix.length,
-        options: [...staticWordOptions, ...documentWords(state, analysis.prefix)],
-        validFor: /^\w*$/,
+        options: [...staticWordOptions, ...dynamic.options],
+        validFor: validForPrefix(analysis.prefix, dynamic.truncated),
       };
     }
   }
