@@ -18,6 +18,8 @@ import { search, searchKeymap, highlightSelectionMatches, openSearchPanel, gotoL
 import { autocompletion, closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 import { lintGutter, lintKeymap } from "@codemirror/lint";
 import { createTheme, createHighlight } from "./themes.js";
+import { editorScrollbars } from "./scrollbars.js";
+import { identifierIndexExtension } from "./identifiers.js";
 
 export const compartments = {
   language: new Compartment(),
@@ -162,6 +164,8 @@ function appKeymap(post) {
 export function createBaseExtensions({ post, onUpdate }) {
   return [
     highlightSpecialChars(),
+    identifierIndexExtension,
+    editorScrollbars(),
     history(),
     drawSelection(),
     dropCursor(),
