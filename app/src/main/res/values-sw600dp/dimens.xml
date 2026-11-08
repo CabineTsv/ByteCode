@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="tab_height">44dp</dimen>
+    <dimen name="row_height">44dp</dimen>
+    <dimen name="status_height">26dp</dimen>
+    <dimen name="extra_keys_height">46dp</dimen>
+    <dimen name="console_header_height">40dp</dimen>
+    <dimen name="explorer_default_width">320dp</dimen>
+    <dimen name="explorer_min_width">220dp</dimen>
+    <dimen name="drawer_width">340dp</dimen>
+    <dimen name="console_default_height">220dp</dimen>
+    <dimen name="icon_button">44dp</dimen>
+    <dimen name="tab_min_width">128dp</dimen>
+    <dimen name="tab_max_title_width">220dp</dimen>
+</resources>
