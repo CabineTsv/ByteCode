@@ -2,10 +2,12 @@
 // actually opened are parsed. If a chunk fails to load the editor falls back to plain text.
 import { StreamLanguage } from "@codemirror/language";
 import { EditorState } from "@codemirror/state";
-import { wordCompletionSource } from "./words.js";
+import { wordCompletionSource, caseInsensitiveWordCompletionSource } from "./words.js";
 
 // Every language except Luau (which has its own source) and plain text also completes words from the document.
 const wordCompletion = EditorState.languageData.of(() => [{ autocomplete: wordCompletionSource }]);
+const caseInsensitiveWordCompletion = EditorState.languageData.of(() => [{ autocomplete: caseInsensitiveWordCompletionSource }]);
+const CASE_INSENSITIVE = new Set(["sql", "css", "html"]);
 
 const legacy = (loader, pick) => async () => StreamLanguage.define(pick(await loader()));
 
@@ -47,7 +49,8 @@ export function loadLanguage(id, onError) {
   const key = isKnownLanguage(id) ? id : "plaintext";
   if (!cache.has(key)) {
     const withWords = key !== "luau" && key !== "plaintext";
-    cache.set(key, LOADERS[key]().then((support) => (withWords ? [support, wordCompletion] : support)).catch((error) => {
+    const words = CASE_INSENSITIVE.has(key) ? caseInsensitiveWordCompletion : wordCompletion;
+    cache.set(key, LOADERS[key]().then((support) => (withWords ? [support, words] : support)).catch((error) => {
       if (onError) onError(`Could not load language '${key}': ${error && error.message}`);
       cache.delete(key);
       return [];
