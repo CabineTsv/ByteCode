@@ -18,6 +18,9 @@ export const BUILTIN_TYPES = new Set(words(
 export const GLOBAL_FUNCTIONS = new Set(words(
   "assert collectgarbage error gcinfo getfenv getmetatable ipairs newproxy next pairs pcall print rawequal rawget rawlen rawset select setfenv setmetatable tonumber tostring type typeof unpack warn xpcall _G _VERSION"));
 
+export const CUSTOM_GLOBAL_FUNCTIONS = new Set(words(
+  "getconnections hookfunction hookmetamethod getupvalues getgc"));
+
 // Standard Luau libraries.
 export const LIBRARIES = {
   math: words("abs acos asin atan atan2 ceil clamp cos cosh deg exp floor fmod frexp ldexp log log10 map max min modf noise pi pow rad random randomseed round sign sin sinh sqrt tan tanh huge"),
