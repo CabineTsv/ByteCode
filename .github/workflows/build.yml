@@ -40,6 +40,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Repository is complete (every file listed in MANIFEST.sha256 exists)
+        run: python3 scripts/ci/check-manifest.py
+
       - name: CI helper scripts (workflow guard and self-tests)
         run: |
           python3 scripts/ci/check-workflow.py
