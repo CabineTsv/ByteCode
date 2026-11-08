@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -30,7 +31,12 @@ class TabStrip(private val recycler: RecyclerView, private val listener: Listene
     init {
         recycler.layoutManager = LinearLayoutManager(recycler.context, LinearLayoutManager.HORIZONTAL, false)
         recycler.adapter = adapter
-        recycler.itemAnimator = null
+        recycler.itemAnimator = DefaultItemAnimator().apply {
+            supportsChangeAnimations = false
+            addDuration = 120L
+            removeDuration = 100L
+            moveDuration = 120L
+        }
     }
 
     fun submit(documents: List<OpenDocument>, activeId: String?) {
@@ -59,6 +65,8 @@ class TabStrip(private val recycler: RecyclerView, private val listener: Listene
         private val close: ImageView = view.findViewById(R.id.tab_close)
         private val closeArea: View = view.findViewById(R.id.tab_close_area)
         private val indicator: View = view.findViewById(R.id.tab_indicator)
+        private var boundId: String? = null
+        private var boundActive = false
 
         fun bind(item: TabItem) {
             val context = itemView.context
@@ -68,10 +76,21 @@ class TabStrip(private val recycler: RecyclerView, private val listener: Listene
             dirty.visibility = if (item.dirty) View.VISIBLE else View.GONE
             close.visibility = if (item.dirty) View.GONE else View.VISIBLE
             indicator.setBackgroundColor(if (item.active) Palette.accent else Color.TRANSPARENT)
+            indicator.animate().cancel()
+            val becameActive = item.active && boundId == item.id && !boundActive
+            if (becameActive) {
+                indicator.pivotX = 0f
+                indicator.scaleX = 0f
+                indicator.animate().scaleX(1f).setDuration(140L).start()
+            } else {
+                indicator.scaleX = 1f
+            }
+            boundId = item.id
+            boundActive = item.active
             if (item.active) {
                 itemView.setBackgroundColor(Palette.color(context, R.color.bc_background))
             } else {
-                itemView.setBackgroundResource(R.drawable.bg_item_ripple)
+                itemView.setBackgroundResource(R.drawable.bg_tab_inactive)
             }
             itemView.setOnClickListener { listener.onTabSelected(item.id) }
             itemView.setOnLongClickListener {
