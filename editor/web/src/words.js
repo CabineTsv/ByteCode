@@ -1,24 +1,23 @@
 // A small fallback completion source for every language that has no dedicated one:
 // it suggests words that already appear in the document. Language packs add their own
 // completions (HTML tags, CSS properties, JavaScript globals, SQL keywords, ...) next to it.
-const MAX_SCAN_CHARS = 300000;
-const MAX_WORDS = 300;
+import { suggestIdentifiers, validForPrefix, followsDigit, WORD_BEFORE_CURSOR } from "./identifiers.js";
 
-export function wordCompletionSource(context) {
-  const word = context.matchBefore(/[A-Za-z_$][\w$]*/);
-  if (!word) return null;
-  if (word.to - word.from < 2 && !context.explicit) return null;
-  const typed = word.text;
-  const doc = context.state.doc;
-  const text = doc.sliceString(0, Math.min(doc.length, MAX_SCAN_CHARS));
-  const seen = new Set();
-  for (const match of text.matchAll(/[A-Za-z_$][\w$]{2,}/g)) {
-    if (match[0] !== typed) seen.add(match[0]);
-    if (seen.size >= MAX_WORDS) break;
-  }
-  return {
-    from: word.from,
-    options: [...seen].map((label) => ({ label, type: "text", boost: -5 })),
-    validFor: /^[\w$]*$/,
+export function createWordCompletionSource({ caseSensitive = true } = {}) {
+  return (context) => {
+    const word = context.matchBefore(WORD_BEFORE_CURSOR);
+    if (!word) return null;
+    if (word.to - word.from < 2 && !context.explicit) return null;
+    if (followsDigit(context.state, word.from)) return null;
+    const { options, truncated } = suggestIdentifiers(context.state, {
+      pos: context.pos,
+      prefix: word.text,
+      caseSensitive,
+    });
+    if (options.length === 0) return null;
+    return { from: word.from, options, validFor: validForPrefix(word.text, truncated) };
   };
 }
+
+export const wordCompletionSource = createWordCompletionSource();
+export const caseInsensitiveWordCompletionSource = createWordCompletionSource({ caseSensitive: false });
