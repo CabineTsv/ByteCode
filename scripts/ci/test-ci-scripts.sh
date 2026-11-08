@@ -61,7 +61,7 @@ PY
 # ---------------------------------------------------------------- syntax
 run_ok "setup-android-sdk.sh has valid bash syntax" bash -n scripts/ci/setup-android-sdk.sh
 run_ok "test-ci-scripts.sh has valid bash syntax" bash -n scripts/ci/test-ci-scripts.sh
-for py in scripts/ci/check-workflow.py scripts/ci/digest.py; do
+for py in scripts/ci/check-workflow.py scripts/ci/check-manifest.py scripts/ci/digest.py; do
   run_ok "$py parses" python3 -c "import ast, sys; ast.parse(open(sys.argv[1], encoding='utf-8').read())" "$py"
 done
 
@@ -120,6 +120,49 @@ run_fails_with "guard notices that workflow_dispatch was dropped" 'trigger `work
 fresh_tree
 replace_in "$WORK/tree/.github/workflows/build.yml" 'bash scripts/ci/setup-android-sdk.sh' 'echo skipped'
 run_fails_with "guard notices that the Android SDK step was dropped" 'Android SDK step' guard_on_tree
+
+# ---------------------------------------------------------------- repository completeness check
+run_ok "manifest check passes on the real project" python3 scripts/ci/check-manifest.py
+
+make_manifest_tree() {
+  rm -rf "$WORK/mtree"
+  mkdir -p "$WORK/mtree/a/b" "$WORK/mtree/gradle/wrapper"
+  printf 'one\n' > "$WORK/mtree/a/one.txt"
+  printf 'two\n' > "$WORK/mtree/a/b/two.txt"
+  printf 'props\n' > "$WORK/mtree/gradle/wrapper/gradle-wrapper.properties"
+  (cd "$WORK/mtree" && sha256sum a/one.txt a/b/two.txt gradle/wrapper/gradle-wrapper.properties > MANIFEST.sha256)
+}
+manifest_on_tree() { python3 "$ROOT/scripts/ci/check-manifest.py" --root "$WORK/mtree" "$@"; }
+
+make_manifest_tree
+run_ok "manifest check passes when every listed file exists" manifest_on_tree
+
+make_manifest_tree
+rm "$WORK/mtree/gradle/wrapper/gradle-wrapper.properties"
+run_fails_with "manifest check names the missing file (the cause of the second CI failure)" \
+  'missing: gradle/wrapper/gradle-wrapper.properties' manifest_on_tree
+grep -q '::error title=Repository is incomplete::' "$WORK/out.txt" \
+  || fail "manifest check: no error annotation for the run page" "$(cat "$WORK/out.txt")"
+pass "manifest check: the error annotation names the missing file"
+
+make_manifest_tree
+rm "$WORK/mtree/a/one.txt" "$WORK/mtree/a/b/two.txt"
+run_fails_with "manifest check lists every missing file in one run" 'missing: a/one.txt' manifest_on_tree
+grep -q 'missing: a/b/two.txt' "$WORK/out.txt" || fail "manifest check: the second missing file is not listed" "$(cat "$WORK/out.txt")"
+pass "manifest check: all missing files are listed together"
+
+make_manifest_tree
+printf 'edited on purpose\n' > "$WORK/mtree/a/one.txt"
+run_ok "manifest check does not fail when a file was edited on purpose" manifest_on_tree
+run_ok "manifest check with --hashes only reports the edited file" manifest_on_tree --hashes
+grep -q 'note: differs from the manifest: a/one.txt' "$WORK/out.txt" \
+  || fail "manifest check --hashes: the edited file is not reported" "$(cat "$WORK/out.txt")"
+pass "manifest check: --hashes names the edited file"
+
+make_manifest_tree
+rm "$WORK/mtree/MANIFEST.sha256"
+run_fails_with "manifest check fails clearly when MANIFEST.sha256 itself is missing" \
+  'MANIFEST.sha256 was not found' manifest_on_tree
 
 # ---------------------------------------------------------------- Android SDK script (fake sdkmanager)
 make_fake_sdk() { # make_fake_sdk ROOT
