@@ -24,18 +24,26 @@ concurrency:
 permissions:
   contents: write # lets the workflow attach APKs to a GitHub release
 
+# These versions must match the Gradle files; scripts/ci/check-workflow.py verifies that.
 env:
   GRADLE_VERSION: "8.10.2"
   NDK_VERSION: "27.0.12077973"
   CMAKE_VERSION: "3.22.1"
+  ANDROID_PLATFORM: "35"
+  BUILD_TOOLS_VERSIONS: "34.0.0 35.0.0" # AGP 8.7.x defaults to 34.0.0; 35.0.0 matches compileSdk 35
 
 jobs:
   quick-tests:
-    name: Unit tests (editor logic, native helpers)
+    name: Unit tests (editor logic, native helpers, CI scripts)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
+      - name: CI helper scripts (workflow guard and self-tests)
+        run: |
+          python3 scripts/ci/check-workflow.py
+          bash scripts/ci/test-ci-scripts.sh
 
       - uses: actions/setup-node@v4
         with:
@@ -77,6 +85,13 @@ jobs:
             echo "type=debug" >> "$GITHUB_OUTPUT"
           fi
 
+      # The runner image already contains an Android SDK; it is used as it is. There is deliberately
+      # no third-party SDK action here: the previous one failed the first run (it asked sdkmanager
+      # for the package "tools", which no longer exists) before Gradle started. This step runs
+      # before setup-java so that sdkmanager uses the image's own JDK.
+      - name: Set up Android SDK components
+        run: bash scripts/ci/setup-android-sdk.sh
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -92,13 +107,6 @@ jobs:
           path: ~/.npm
           key: npm-${{ hashFiles('editor/web/package.json') }}
           restore-keys: npm-
-
-      - uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK components
-        run: |
-          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" \
-            "ndk;${NDK_VERSION}" "cmake;${CMAKE_VERSION}"
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -116,18 +124,22 @@ jobs:
           fi
 
       - name: Build APK
+        shell: bash
         env:
           BYTECODE_MINIFY: ${{ steps.config.outputs.type == 'release' && '1' || '0' }}
           BYTECODE_KEYSTORE_PASSWORD: ${{ secrets.BYTECODE_KEYSTORE_PASSWORD }}
           BYTECODE_KEY_ALIAS: ${{ secrets.BYTECODE_KEY_ALIAS }}
           BYTECODE_KEY_PASSWORD: ${{ secrets.BYTECODE_KEY_PASSWORD }}
         run: |
+          mkdir -p "$RUNNER_TEMP/ci-logs"
           if [ "${{ steps.config.outputs.type }}" = "release" ]; then
             TASK=":app:assembleRelease"
           else
             TASK=":app:assembleDebug"
           fi
-          gradle --no-daemon --stacktrace "$TASK"
+          # --continue reports every independent failure in one run. The output is also saved so the
+          # failure digest below can pick the errors out of it.
+          gradle --no-daemon --stacktrace --continue "$TASK" 2>&1 | tee "$RUNNER_TEMP/ci-logs/gradle.log"
 
       - name: Verify that an APK was produced
         run: |
@@ -141,13 +153,28 @@ jobs:
           path: app/build/outputs/apk/**/*.apk
           if-no-files-found: error
 
+      - name: Failure digest (shown on the run's Summary page)
+        if: failure()
+        shell: bash
+        run: python3 scripts/ci/digest.py "$RUNNER_TEMP"/ci-logs/*.log >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Upload CI logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-logs
+          path: ${{ runner.temp }}/ci-logs/
+          if-no-files-found: ignore
+
       - name: Upload build reports (on failure)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: build-reports
           path: |
-            **/build/reports/
+            app/build/reports/
+            editor/build/reports/
+            luau/build/reports/
           if-no-files-found: ignore
 
       - name: Attach APK to the GitHub release
