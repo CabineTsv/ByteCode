@@ -102,7 +102,7 @@
             android:title="@string/settings_accent_custom"
             app:iconSpaceReserved="false" />
         <ListPreference
-            android:defaultValue="default"
+            android:defaultValue="onecompiler"
             android:entries="@array/syntax_theme_entries"
             android:entryValues="@array/syntax_theme_values"
             android:key="ui_syntax_theme"
