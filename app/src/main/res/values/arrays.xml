@@ -55,11 +55,13 @@
         <item>custom</item>
     </string-array>
     <string-array name="syntax_theme_entries">
+        <item>OneCompiler (Lua style)</item>
         <item>Default (VS Code style)</item>
         <item>Monokai</item>
         <item>Solarized</item>
     </string-array>
     <string-array name="syntax_theme_values">
+        <item>onecompiler</item>
         <item>default</item>
         <item>monokai</item>
         <item>solarized</item>
