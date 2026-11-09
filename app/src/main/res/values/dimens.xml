@@ -6,7 +6,7 @@
     <dimen name="status_height">24dp</dimen>
     <dimen name="extra_keys_height">42dp</dimen>
     <dimen name="console_header_height">36dp</dimen>
-    <dimen name="console_handle_height">20dp</dimen>
+    <dimen name="console_handle_height">16dp</dimen>
     <dimen name="explorer_default_width">280dp</dimen>
     <dimen name="explorer_min_width">180dp</dimen>
     <dimen name="explorer_divider_width">8dp</dimen>
