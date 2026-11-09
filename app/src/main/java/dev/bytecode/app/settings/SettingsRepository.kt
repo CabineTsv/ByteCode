@@ -68,7 +68,7 @@ class SettingsRepository(private val context: Context) {
     val autoCloseQuotes: Boolean get() = prefs.getBoolean(KEY_AUTO_QUOTES, true)
     val autoIndent: Boolean get() = prefs.getBoolean(KEY_AUTO_INDENT, true)
     val foldGutter: Boolean get() = prefs.getBoolean(KEY_FOLD_GUTTER, true)
-    val syntaxTheme: String get() = prefs.getString(KEY_SYNTAX_THEME, "default") ?: "default"
+    val syntaxTheme: String get() = prefs.getString(KEY_SYNTAX_THEME, "onecompiler") ?: "onecompiler"
 
     val themeMode: String get() = prefs.getString(KEY_THEME, "dark") ?: "dark"
     val accentKey: String get() = prefs.getString(KEY_ACCENT, "azure") ?: "azure"
