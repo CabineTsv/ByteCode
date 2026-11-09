@@ -245,6 +245,13 @@ test("environment function names do not override declarations or members", () =>
   assert.equal(styleOf(flat("getgcx()"), "getgcx"), "variableName.function");
 });
 
+test("method colons and assignments are operators so themes can colour them like other operators", () => {
+  const call = flat('game:GetService("Players")');
+  assert.equal(styleOf(call, ":"), "operator");
+  assert.equal(styleOf(flat("local a = 1"), "="), "definitionOperator");
+  assert.equal(styleOf(flat("local function f(a: number) end"), ":"), "operator");
+});
+
 test("prints a sample for visual inspection", () => {
   const sample = `--!strict
 local Players = game:GetService("Players")
