@@ -19,8 +19,8 @@ data class EditorSettings(
     val autoIndent: Boolean = true,
     val foldGutter: Boolean = true,
     val darkTheme: Boolean = true,
-    /** One of: default, monokai, solarized. */
-    val syntaxTheme: String = "default",
+    /** One of: onecompiler, default, monokai, solarized. */
+    val syntaxTheme: String = "onecompiler",
     /** `#rrggbb` */
     val accentColor: String = "#4ea1ff"
 ) {
