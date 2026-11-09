@@ -379,10 +379,10 @@ function readColon(stream, state) {
   const rest = stream.string.slice(stream.pos);
   const isMethod = state.funcName || /^[A-Za-z_]\w*\s*(?:[("'`{]|\[=*\[)/.test(rest);
   if (isMethod || (state.prev !== "ident" && state.prev !== "close")) {
-    return done(state, "method-colon", ":", "punctuation");
+    return done(state, "method-colon", ":", "operator");
   }
   enterType(state);
-  return done(state, "colon", ":", "punctuation");
+  return done(state, "colon", ":", "operator");
 }
 
 function readCodeToken(stream, state) {
