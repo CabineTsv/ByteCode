@@ -9,17 +9,19 @@ const UI = {
   dark: {
     bg: "#1b1d21", fg: "#d4d7dd", gutter: "#5f6672", gutterActive: "#c3c8d0", activeLine: "rgba(255,255,255,0.045)",
     panel: "#23262b", panelAlt: "#2b2f35", border: "#31353c", input: "#1b1d21", muted: "#8a919c",
+    guide: "rgba(255,255,255,0.13)",
   },
   light: {
     bg: "#fbfbfc", fg: "#24292f", gutter: "#9aa1ab", gutterActive: "#3b434d", activeLine: "rgba(0,0,0,0.045)",
     panel: "#eef0f3", panelAlt: "#e3e6ea", border: "#d3d8de", input: "#ffffff", muted: "#6b7280",
+    guide: "rgba(0,0,0,0.14)",
   },
 };
 
 export function createTheme(isDark) {
   const ui = isDark ? UI.dark : UI.light;
   return EditorView.theme({
-    "&": { color: ui.fg, backgroundColor: ui.bg, height: "100%" },
+    "&": { color: ui.fg, backgroundColor: ui.bg, height: "100%", "--bc-guide": ui.guide },
     ".cm-scroller": { fontFamily: "var(--bc-font, monospace)", lineHeight: "1.55", overscrollBehavior: "contain" },
     ".cm-content": { caretColor: "var(--bc-accent)", fontSize: "var(--bc-font-size, 14px)", padding: "6px 0" },
     ".cm-gutters": { backgroundColor: ui.bg, color: ui.gutter, border: "none", fontSize: "var(--bc-font-size, 14px)" },
@@ -67,6 +69,19 @@ export function createTheme(isDark) {
 
 // name -> { dark, light } token colours
 const PALETTES = {
+  onecompiler: {
+    plain: true,
+    dark: {
+      comment: "#75715e", string: "#eaf69c", number: "#b496e4", constant: "#b496e4", keyword: "#f77ec5", control: "#f77ec5",
+      operator: "#f77ec5", punct: "#f6f6f0", variable: "#f6f6f0", property: "#f6f6f0", fn: "#f6f6f0", type: "#96e4f6",
+      typeBuiltin: "#96e4f6", builtin: "#96e4f6", robloxGlobal: "#f6f6f0", robloxMethod: "#f6f6f0", meta: "#f77ec5", self: "#f6f6f0",
+    },
+    light: {
+      comment: "#8a8878", string: "#7d8a00", number: "#7a4fd6", constant: "#7a4fd6", keyword: "#d6338f", control: "#d6338f",
+      operator: "#d6338f", punct: "#272822", variable: "#272822", property: "#272822", fn: "#272822", type: "#007fa3",
+      typeBuiltin: "#007fa3", builtin: "#007fa3", robloxGlobal: "#272822", robloxMethod: "#272822", meta: "#d6338f", self: "#272822",
+    },
+  },
   default: {
     dark: {
       comment: "#6a9955", string: "#ce9178", number: "#b5cea8", constant: "#569cd6", keyword: "#569cd6", control: "#c586c0",
@@ -109,15 +124,16 @@ export const SYNTAX_THEMES = Object.keys(PALETTES);
 
 export function createHighlight(name, isDark) {
   const family = PALETTES[name] || PALETTES.default;
+  const plain = Boolean(family.plain);
   const p = isDark ? family.dark : family.light;
   return HighlightStyle.define([
-    { tag: t.comment, color: p.comment, fontStyle: "italic" },
+    { tag: t.comment, color: p.comment, fontStyle: plain ? "normal" : "italic" },
     { tag: t.string, color: p.string },
     { tag: t.number, color: p.number },
     { tag: [t.bool, t.null, t.atom], color: p.constant },
     { tag: t.keyword, color: p.keyword },
     { tag: [t.controlKeyword, t.moduleKeyword], color: p.control },
-    { tag: t.self, color: p.self, fontStyle: "italic" },
+    { tag: t.self, color: p.self, fontStyle: plain ? "normal" : "italic" },
     { tag: t.operator, color: p.operator },
     { tag: [t.punctuation, t.bracket], color: p.punct },
     { tag: t.variableName, color: p.variable },
