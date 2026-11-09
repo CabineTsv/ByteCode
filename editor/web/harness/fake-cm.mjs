@@ -45,6 +45,16 @@ export class Compartment {
 
 export const Prec = { high: (x) => x, highest: (x) => x };
 
+export const EditorSelection = { cursor: (head) => ({ head, from: head, to: head, empty: true }) };
+export function findClusterBreak(text, pos, forward = true) {
+  return forward ? Math.min(text.length, pos + 1) : Math.max(0, pos - 1);
+}
+export class RangeSetBuilder {
+  constructor() { this.items = []; }
+  add(from, to, value) { this.items.push({ from, to, value }); }
+  finish() { return this.items; }
+}
+
 export class StateField {
   constructor(spec) { this.spec = spec; }
   static define(spec) { return new StateField(spec); }
@@ -148,6 +158,8 @@ EditorView.theme = (spec, options) => ({ theme: spec, options });
 EditorView.lineWrapping = { lineWrapping: true };
 EditorView.contentAttributes = { of: (attributes) => ({ contentAttributes: attributes }) };
 EditorView.editable = { of: (value) => ({ editable: value }) };
+
+export const Decoration = { line: (spec) => ({ line: spec }), mark: (spec) => ({ mark: spec }) };
 
 export const ViewPlugin = { fromClass: (plugin) => ({ viewPlugin: plugin }) };
 
