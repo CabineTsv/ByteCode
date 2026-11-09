@@ -23,11 +23,6 @@
             app:subtitleTextAppearance="@style/TextAppearance.ByteCode.Subtitle"
             app:titleTextAppearance="@style/TextAppearance.ByteCode.Title" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/bc_border" />
-
         <LinearLayout
             android:id="@+id/workbench"
             android:layout_width="match_parent"
@@ -64,11 +59,6 @@
                     android:clipToPadding="false"
                     android:overScrollMode="never" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/bc_border" />
-
                 <FrameLayout
                     android:id="@+id/editor_container"
                     android:layout_width="match_parent"
@@ -81,11 +71,6 @@
                         android:layout_height="match_parent" />
                 </FrameLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/bc_border" />
-
                 <dev.bytecode.app.ui.ExtraKeysBar
                     android:id="@+id/extra_keys"
                     android:layout_width="match_parent"
@@ -96,7 +81,7 @@
                     android:id="@+id/status_bar"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/status_height"
-                    android:background="@color/bc_toolbar"
+                    android:background="@color/bc_background"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="12dp"
