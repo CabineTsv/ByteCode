@@ -15,11 +15,13 @@ import {
   foldCode, unfoldCode,
 } from "@codemirror/language";
 import { search, searchKeymap, highlightSelectionMatches, openSearchPanel, gotoLine } from "@codemirror/search";
-import { autocompletion, closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import { autocompletion, closeBrackets } from "@codemirror/autocomplete";
 import { lintGutter, lintKeymap } from "@codemirror/lint";
 import { createTheme, createHighlight } from "./themes.js";
 import { editorScrollbars } from "./scrollbars.js";
 import { identifierIndexExtension } from "./identifiers.js";
+import { indentGuides } from "./indent-guides.js";
+import { backspaceCommand } from "./editing.js";
 
 export const compartments = {
   language: new Compartment(),
@@ -51,7 +53,7 @@ export const DEFAULT_SETTINGS = {
   autoIndent: true,
   foldGutter: true,
   darkTheme: true,
-  syntaxTheme: "default",
+  syntaxTheme: "onecompiler",
   accentColor: "#4ea1ff",
 };
 
@@ -79,7 +81,7 @@ function closeBracketsExtension(settings) {
   if (settings.autoCloseQuotes) brackets.push("'", '"', "`");
   return [
     closeBrackets(),
-    keymap.of(closeBracketsKeymap),
+    Prec.highest(keymap.of([{ key: "Backspace", run: backspaceCommand(brackets) }])),
     // Overrides the per-language bracket list so the two settings work in every language.
     Prec.high(EditorState.languageData.of(() => [{ closeBrackets: { brackets } }])),
   ];
@@ -166,6 +168,8 @@ export function createBaseExtensions({ post, onUpdate }) {
     highlightSpecialChars(),
     identifierIndexExtension,
     editorScrollbars(),
+    indentGuides(),
+    Prec.highest(keymap.of([{ key: "Backspace", run: backspaceCommand([]) }])),
     history(),
     drawSelection(),
     dropCursor(),
